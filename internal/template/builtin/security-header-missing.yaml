@@ -1,0 +1,24 @@
+id: security-header-missing
+info:
+  name: Missing X-Frame-Options / clickjacking protection
+  author: huntx
+  severity: info
+  tags: misconfig,headers
+  description: The response sets no X-Frame-Options and no frame-ancestors CSP, allowing framing.
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: header
+        case-insensitive: true
+        negative: true
+        words:
+          - "x-frame-options"
+          - "frame-ancestors"
+        condition: or

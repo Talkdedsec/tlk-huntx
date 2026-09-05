@@ -1,0 +1,34 @@
+id: exposed-dotenv
+info:
+  name: Exposed .env file
+  author: huntx
+  severity: high
+  tags: exposure,config
+  description: A publicly readable .env file may leak database credentials, API keys, and secrets.
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/.env"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: regex
+        part: body
+        regex:
+          - "(?m)^[A-Z0-9_]{2,}=.+"
+      - type: word
+        part: body
+        words:
+          - "<html"
+          - "<!DOCTYPE"
+        case-insensitive: true
+        negative: true
+    extractors:
+      - name: key
+        type: regex
+        part: body
+        regex:
+          - "(?m)^([A-Z0-9_]+)="
+        group: 1

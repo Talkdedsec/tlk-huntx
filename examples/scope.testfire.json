@@ -1,0 +1,1 @@
+{ "program":"altoro-demo", "in_scope":["testfire.net","*.testfire.net"], "allowed_methods":["GET","HEAD","OPTIONS"] }

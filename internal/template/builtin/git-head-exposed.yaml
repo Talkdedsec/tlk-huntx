@@ -1,0 +1,20 @@
+id: git-head-exposed
+info:
+  name: Exposed .git/HEAD
+  author: huntx
+  severity: medium
+  tags: exposure,git
+  description: A readable .git/HEAD confirms a served git directory and possible source disclosure.
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/.git/HEAD"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: regex
+        part: body
+        regex:
+          - "ref:\\s+refs/heads/"

@@ -1,0 +1,22 @@
+{
+  "program": "acme",
+  "in_scope": [
+    "*.acme.com",
+    "acme.io",
+    "192.0.2.0/24"
+  ],
+  "out_of_scope": [
+    "blog.acme.com",
+    "*.internal.acme.com"
+  ],
+  "forbidden_paths": [
+    "/logout",
+    "/admin/delete"
+  ],
+  "allowed_methods": [
+    "GET",
+    "POST",
+    "HEAD",
+    "OPTIONS"
+  ]
+}

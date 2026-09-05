@@ -1,0 +1,17 @@
+{
+  "owner": {
+    "headers": {
+      "Authorization": "Bearer OWNER_TOKEN",
+      "Cookie": "session=owner-session"
+    }
+  },
+  "userB": {
+    "headers": {
+      "Authorization": "Bearer OTHER_TOKEN",
+      "Cookie": "session=userb-session"
+    }
+  },
+  "anon": {
+    "headers": {}
+  }
+}

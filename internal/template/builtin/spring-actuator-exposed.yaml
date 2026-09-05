@@ -1,0 +1,26 @@
+id: spring-actuator-exposed
+info:
+  name: Spring Boot Actuator exposed
+  author: huntx
+  severity: medium
+  tags: exposure,misconfig,springboot
+  description: Actuator endpoints expose health, environment, and sometimes secrets.
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/actuator"
+      - "{{BaseURL}}/actuator/health"
+      - "{{BaseURL}}/actuator/env"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        condition: or
+        words:
+          - "\"status\":\"UP\""
+          - "\"_links\""
+          - "\"activeProfiles\""
+          - "\"propertySources\""

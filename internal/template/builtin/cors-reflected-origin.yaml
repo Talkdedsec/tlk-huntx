@@ -1,0 +1,20 @@
+id: cors-reflected-origin
+info:
+  name: CORS reflects arbitrary Origin
+  author: huntx
+  severity: medium
+  tags: misconfig,cors
+  description: The response reflects an attacker-supplied Origin in Access-Control-Allow-Origin.
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+    headers:
+      Origin: https://huntx-cors-probe.example
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: header
+        case-insensitive: true
+        words:
+          - "access-control-allow-origin: https://huntx-cors-probe.example"

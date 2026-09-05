@@ -1,0 +1,12 @@
+{
+  "program": "vulnweb-demo",
+  "in_scope": [
+    "testphp.vulnweb.com"
+  ],
+  "out_of_scope": [],
+  "allowed_methods": [
+    "GET",
+    "HEAD",
+    "OPTIONS"
+  ]
+}

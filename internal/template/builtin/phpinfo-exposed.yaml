@@ -1,0 +1,24 @@
+id: phpinfo-exposed
+info:
+  name: phpinfo() exposed
+  author: huntx
+  severity: medium
+  tags: exposure,php,info
+  description: A reachable phpinfo() page leaks PHP configuration, paths, and environment.
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/phpinfo.php"
+      - "{{BaseURL}}/info.php"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        condition: or
+        words:
+          - "<title>phpinfo()"
+          - "PHP Version"
+          - "php.ini"

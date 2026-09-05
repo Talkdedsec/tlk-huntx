@@ -1,0 +1,20 @@
+id: exposed-ds-store
+info:
+  name: Exposed .DS_Store
+  author: huntx
+  severity: low
+  tags: exposure,misconfig
+  description: A served .DS_Store leaks directory and file names from the developer's machine.
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/.DS_Store"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - "Bud1"

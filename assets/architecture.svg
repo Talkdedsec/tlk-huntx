@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" font-family="'Segoe UI',system-ui,Arial,sans-serif">
+  <rect width="900" height="520" rx="16" fill="#0c0e13"/>
+  <rect x="1" y="1" width="898" height="518" rx="15" fill="none" stroke="#232936"/>
+  <text x="30" y="42" font-size="20" font-weight="700" fill="#e7ebf0">huntx architecture</text>
+  <text x="30" y="66" font-size="13" fill="#8b95a7">every request passes the safety layer first · the model only ever sees findings the engine already verified</text>
+
+  <!-- layers -->
+  <g font-size="14">
+    <!-- INTERFACE -->
+    <rect x="30" y="88" width="840" height="52" rx="10" fill="#141821" stroke="#2d3446"/>
+    <text x="46" y="110" font-size="12" font-weight="700" fill="#5aa9ff" letter-spacing="1">INTERFACE</text>
+    <text x="46" y="128" fill="#aab4c0">cli · mcp (stdio tools) · dashboard · report → markdown / SARIF · notify</text>
+
+    <!-- INTELLIGENCE -->
+    <rect x="30" y="150" width="840" height="52" rx="10" fill="#141821" stroke="#2d3446"/>
+    <text x="46" y="172" font-size="12" font-weight="700" fill="#57d9a3" letter-spacing="1">INTELLIGENCE</text>
+    <text x="46" y="190" fill="#aab4c0">agent (EV-ranked plan + attack chains) · feedback (FP-learning) · /huntx skill</text>
+
+    <!-- VERIFY -->
+    <rect x="30" y="212" width="840" height="52" rx="10" fill="#141821" stroke="#2d3446"/>
+    <text x="46" y="234" font-size="12" font-weight="700" fill="#ffd24a" letter-spacing="1">VERIFY</text>
+    <text x="46" y="252" fill="#aab4c0">deterministic re-confirm · OOB collaborator · BOLA/IDOR differential</text>
+
+    <!-- DETECT -->
+    <rect x="30" y="274" width="840" height="52" rx="10" fill="#141821" stroke="#2d3446"/>
+    <text x="46" y="296" font-size="12" font-weight="700" fill="#ff9f43" letter-spacing="1">DETECT</text>
+    <text x="46" y="314" fill="#aab4c0">nuclei-compatible templates · secrets · api · greybox · reflect · sqli · ssti · lfi · ssrf · cmdi · hostheader</text>
+
+    <!-- DISCOVER -->
+    <rect x="30" y="336" width="840" height="52" rx="10" fill="#141821" stroke="#2d3446"/>
+    <text x="46" y="358" font-size="12" font-weight="700" fill="#5aa9ff" letter-spacing="1">DISCOVER</text>
+    <text x="46" y="376" fill="#aab4c0">recon (passive subdomains + gated probing) · crawl (html/js/robots/sitemap) · fuzz · session</text>
+
+    <!-- KNOWLEDGE -->
+    <rect x="30" y="398" width="840" height="40" rx="10" fill="#141821" stroke="#2d3446"/>
+    <text x="46" y="424" font-size="12" font-weight="700" fill="#8b95a7" letter-spacing="1">KNOWLEDGE</text>
+    <text x="180" y="424" fill="#aab4c0">attack-surface graph · monitor (diff vs last run)</text>
+
+    <!-- SAFETY -->
+    <rect x="30" y="448" width="840" height="48" rx="10" fill="#1a1220" stroke="#e6394a"/>
+    <text x="46" y="470" font-size="12" font-weight="700" fill="#e6394a" letter-spacing="1">SAFETY</text>
+    <text x="46" y="488" fill="#e7c9cd">scope gate · rate-limit · blast-radius · authorization · fetch — the only client that talks to a target</text>
+  </g>
+</svg>

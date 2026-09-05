@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>huntx</title>
+<style>
+  :root{
+    --bg:#0c0e13; --panel:#141821; --panel2:#1a1f2b; --line:#232936; --line2:#2d3446;
+    --fg:#e7ebf0; --mut:#8b95a7;
+    --accent:#e6394a; --accent-dim:#7a1f28;
+    --crit:#ff4d5e; --high:#ff9f43; --med:#ffd24a; --low:#57d9a3; --info:#5aa9ff;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--bg);color:var(--fg);font:13.5px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  a{color:var(--info);text-decoration:none}
+  .muted{color:var(--mut)}
+  /* header */
+  header{display:flex;align-items:center;gap:18px;padding:14px 20px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#10131a,#0c0e13);position:sticky;top:0;z-index:20}
+  .brand{display:flex;align-items:baseline;gap:10px}
+  .brand .mark{font-size:20px;font-weight:700;letter-spacing:1px}
+  .brand .mark b{color:var(--accent)}
+  .brand .sub{color:var(--mut);font-size:11px;letter-spacing:.5px;text-transform:uppercase}
+  header .grow{flex:1}
+  .search{background:var(--panel2);border:1px solid var(--line2);border-radius:8px;color:var(--fg);padding:8px 12px;width:280px;font:inherit;outline:none}
+  .search:focus{border-color:var(--accent-dim)}
+  .btn{background:var(--panel2);border:1px solid var(--line2);color:var(--fg);border-radius:8px;padding:8px 12px;cursor:pointer;font:inherit}
+  .btn:hover{border-color:var(--accent-dim)}
+  /* stats */
+  .stats{display:flex;gap:12px;flex-wrap:wrap;padding:16px 20px 4px}
+  .tile{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;min-width:104px}
+  .tile .n{font-size:22px;font-weight:700}
+  .tile .l{color:var(--mut);font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;margin-top:2px}
+  .sevbar{display:flex;height:8px;border-radius:6px;overflow:hidden;margin-top:10px;border:1px solid var(--line)}
+  .sevbar i{display:block;height:100%}
+  /* tabs + chips */
+  .bar{display:flex;align-items:center;gap:8px;padding:8px 20px;flex-wrap:wrap}
+  .tab{background:none;border:1px solid transparent;color:var(--mut);padding:6px 12px;border-radius:8px;cursor:pointer;font:inherit}
+  .tab.active{color:var(--fg);background:var(--panel);border-color:var(--line)}
+  .chips{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+  .chip{border:1px solid var(--line2);background:var(--panel);border-radius:20px;padding:3px 11px;cursor:pointer;font-size:12px;color:var(--mut);user-select:none}
+  .chip.on{color:#0c0e13;font-weight:700}
+  .chip.critical.on{background:var(--crit);border-color:var(--crit)}
+  .chip.high.on{background:var(--high);border-color:var(--high)}
+  .chip.medium.on{background:var(--med);border-color:var(--med)}
+  .chip.low.on{background:var(--low);border-color:var(--low)}
+  .chip.info.on{background:var(--info);border-color:var(--info)}
+  /* main */
+  main{padding:8px 20px 40px}
+  table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+  th{color:var(--mut);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;position:sticky;top:0}
+  tbody tr{cursor:pointer}
+  tbody tr:hover{background:var(--panel2)}
+  tr:last-child td{border-bottom:0}
+  .pill{padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700;color:#0c0e13;display:inline-block;min-width:64px;text-align:center}
+  .pill.critical{background:var(--crit)} .pill.high{background:var(--high)} .pill.medium{background:var(--med)}
+  .pill.low{background:var(--low)} .pill.info{background:var(--info)}
+  .tid{color:var(--mut)}
+  .ok{color:var(--low);font-weight:700}
+  .url{color:var(--fg);word-break:break-all}
+  .empty{color:var(--mut);padding:28px;text-align:center}
+  .count{background:var(--panel2);border:1px solid var(--line2);border-radius:20px;padding:1px 8px;font-size:11px;color:var(--mut)}
+  /* drawer */
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .15s;z-index:40}
+  .scrim.open{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;height:100%;width:min(560px,92vw);background:var(--panel);border-left:1px solid var(--line2);transform:translateX(100%);transition:transform .18s ease;z-index:50;display:flex;flex-direction:column}
+  .drawer.open{transform:none}
+  .drawer .dh{display:flex;align-items:flex-start;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line)}
+  .drawer .dh h2{margin:0;font-size:15px;line-height:1.35}
+  .drawer .db{overflow:auto;padding:16px 18px}
+  .drawer .x{margin-left:auto;background:none;border:0;color:var(--mut);font-size:20px;cursor:pointer;line-height:1}
+  .kv{display:grid;grid-template-columns:120px 1fr;gap:6px 12px;margin:4px 0 16px}
+  .kv .k{color:var(--mut)}
+  .sec{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--mut);margin:16px 0 6px}
+  pre{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px;overflow:auto;white-space:pre-wrap;word-break:break-word;margin:0;max-height:260px}
+  .tag{display:inline-block;background:var(--panel2);border:1px solid var(--line2);border-radius:6px;padding:1px 7px;font-size:11px;color:var(--mut);margin:0 4px 4px 0}
+  /* surface graph */
+  #surface svg{width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+  .node-host{cursor:pointer}
+  .node-host:hover .nbox{stroke:var(--accent)}
+</style>
+</head>
+<body>
+<script>
+window.__G={"nodes": {"domain:acme.com": {"id": "domain:acme.com", "kind": "domain", "value": "acme.com"}, "subdomain:acme.com": {"kind": "subdomain", "value": "acme.com", "attrs": {"status": "200", "server": "nginx", "tech": "nginx, PHP", "title": "Acme Corp", "url": "https://acme.com"}}, "subdomain:api.acme.com": {"kind": "subdomain", "value": "api.acme.com", "attrs": {"status": "200", "server": "cloudflare", "tech": "Cloudflare, Express", "title": "Acme API", "url": "https://api.acme.com"}}, "subdomain:admin.acme.com": {"kind": "subdomain", "value": "admin.acme.com", "attrs": {"status": "403", "server": "nginx", "tech": "nginx", "title": "Restricted", "url": "https://admin.acme.com"}}, "subdomain:blog.acme.com": {"kind": "subdomain", "value": "blog.acme.com", "attrs": {"status": "200", "server": "Apache", "tech": "Apache, WordPress", "title": "Acme Blog", "url": "https://blog.acme.com"}}, "subdomain:staging.acme.com": {"kind": "subdomain", "value": "staging.acme.com", "attrs": {"status": "200", "server": "nginx", "tech": "nginx, Next.js", "title": "Staging", "url": "https://staging.acme.com"}}, "subdomain:legacy.acme.com": {"kind": "subdomain", "value": "legacy.acme.com", "attrs": {"status": "500", "server": "nginx", "tech": "nginx", "title": "", "url": "https://legacy.acme.com"}}}, "edges": []};
+window.__F=[{"type": "Error-based SQL injection (MySQL)", "template_id": "sqli-error", "severity": "critical", "confidence": 80, "matched_at": "https://api.acme.com/products?id=1", "cwe": "CWE-89", "verified": false, "evidence": {"request": "GET https://api.acme.com/products?id=1'", "response": "You have an error in your SQL syntax; check the manual near '''' at line 1"}, "repro": "curl -s \"https://api.acme.com/products?id=1'\"", "extracted": {"parameter": "id", "dbms": "MySQL"}, "tags": ["injection"], "id": "d0", "dedup_key": "k0", "ts": "2026-09-05T18:00:00Z"}, {"type": "Server-side request forgery (OOB)", "template_id": "ssrf-oob", "severity": "high", "confidence": 95, "matched_at": "https://api.acme.com/fetch?url=", "cwe": "CWE-918", "verified": true, "evidence": {"request": "GET https://api.acme.com/fetch?url=http://oob.huntx/ab12", "oob_proof": "GET from 203.0.113.9 at 2026-09-05T18:04:11Z"}, "repro": "inject a collaborator URL into the url parameter and watch for the callback", "extracted": {"parameter": "url"}, "tags": ["ssrf"], "id": "d1", "dedup_key": "k1", "ts": "2026-09-05T18:01:00Z"}, {"type": "Leaked secret: aws-access-key", "template_id": "secret-aws-access-key", "severity": "high", "confidence": 90, "matched_at": "https://staging.acme.com/static/app.js", "cwe": "CWE-200", "verified": false, "evidence": {"response": "AKIA****XQ"}, "extracted": {"match": "AKIA****XQ"}, "tags": [], "id": "d2", "dedup_key": "k2", "ts": "2026-09-05T18:02:00Z"}, {"type": "Exposed .git config", "template_id": "exposed-git-config", "severity": "medium", "confidence": 90, "matched_at": "https://blog.acme.com/.git/config", "cwe": "CWE-200", "verified": true, "evidence": {"request": "GET https://blog.acme.com/.git/config", "response": "[core]\n  repositoryformatversion = 0"}, "repro": "curl -s https://blog.acme.com/.git/config", "id": "d3", "dedup_key": "k3", "ts": "2026-09-05T18:03:00Z"}, {"type": "Reflected parameter with unencoded HTML characters (potential XSS)", "template_id": "reflected-input", "severity": "medium", "confidence": 70, "matched_at": "https://staging.acme.com/search?q=test", "cwe": "CWE-79", "verified": false, "evidence": {"request": "GET https://staging.acme.com/search?q=hxr\"'<>"}, "repro": "curl -s \"https://staging.acme.com/search?q=hxr'\"", "extracted": {"parameter": "q"}, "tags": ["reflection", "potential-xss"], "id": "d4", "dedup_key": "k4", "ts": "2026-09-05T18:04:00Z"}, {"type": "CORS reflects arbitrary Origin", "template_id": "cors-reflected-origin", "severity": "medium", "confidence": 85, "matched_at": "https://api.acme.com/v1/user", "cwe": "CWE-942", "verified": true, "evidence": {"request": "GET https://api.acme.com/v1/user  (Origin: https://evil.example)", "response": "Access-Control-Allow-Origin: https://evil.example"}, "id": "d5", "dedup_key": "k5", "ts": "2026-09-05T18:05:00Z"}, {"type": "Directory listing enabled", "template_id": "directory-listing", "severity": "low", "confidence": 70, "matched_at": "https://blog.acme.com/uploads/", "verified": false, "evidence": {"response": "Index of /uploads"}, "id": "d6", "dedup_key": "k6", "ts": "2026-09-05T18:00:00Z"}, {"type": "Missing X-Frame-Options / clickjacking protection", "template_id": "security-header-missing", "severity": "info", "confidence": 70, "matched_at": "https://acme.com", "verified": false, "id": "d7", "dedup_key": "k7", "ts": "2026-09-05T18:01:00Z"}];
+window.fetch=(u)=>Promise.resolve({json:()=>Promise.resolve(String(u).includes('graph')?window.__G:window.__F)});
+</script>
+<style>#demoflag{position:fixed;bottom:12px;left:12px;z-index:99;background:#1a1220;border:1px solid #e6394a;color:#e7c9cd;border-radius:20px;padding:4px 12px;font:12px ui-monospace,monospace}</style><div id="demoflag">● live demo — sample data · <a href="https://github.com/talkdedsec/tlk-huntx" style="color:#5aa9ff">source</a></div>
+<header>
+  <div class="brand"><span class="mark">hunt<b>x</b></span><span class="sub">attack surface console</span></div>
+  <span class="grow"></span>
+  <input id="q" class="search" placeholder="search findings…" autocomplete="off">
+  <button class="btn" id="refresh">↻ refresh</button>
+</header>
+
+<div class="stats" id="stats"></div>
+
+<div class="bar">
+  <button class="tab active" data-tab="findings">Findings</button>
+  <button class="tab" data-tab="hosts">Hosts</button>
+  <button class="tab" data-tab="surface">Surface</button>
+  <span id="viewcount" class="count"></span>
+  <div class="chips" id="chips"></div>
+</div>
+
+<main>
+  <div id="findings"></div>
+  <div id="hosts" hidden></div>
+  <div id="surface" hidden></div>
+</main>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true"></aside>
+
+<script>
+const SEV=["critical","high","medium","low","info"];
+const SEVCOLOR={critical:"#ff4d5e",high:"#ff9f43",medium:"#ffd24a",low:"#57d9a3",info:"#5aa9ff"};
+const state={findings:[],graph:{nodes:{}},tab:"findings",q:"",host:null,off:new Set()};
+
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+async function j(u){try{const r=await fetch(u);return await r.json();}catch(e){return null;}}
+function hostOf(u){try{return new URL(u).host;}catch(e){return (u||"").replace(/^https?:\/\//,"").split("/")[0];}}
+function sevRank(s){return SEV.indexOf(s)<0?4:SEV.indexOf(s);}
+
+async function load(){
+  state.graph=await j("/api/graph")||{nodes:{}};
+  state.findings=(await j("/api/findings")||[]).map((f,i)=>({...f,_i:i}));
+  render();
+}
+
+function visibleFindings(){
+  const q=state.q.toLowerCase();
+  return state.findings.filter(f=>{
+    if(state.off.has(f.severity||"info"))return false;
+    if(state.host&&hostOf(f.matched_at)!==state.host)return false;
+    if(q){const hay=((f.type||"")+" "+(f.template_id||"")+" "+(f.matched_at||"")+" "+(f.cwe||"")).toLowerCase();if(!hay.includes(q))return false;}
+    return true;
+  }).sort((a,b)=>sevRank(a.severity)-sevRank(b.severity)||(a.template_id||"").localeCompare(b.template_id||""));
+}
+
+function render(){
+  renderStats();renderChips();
+  document.getElementById("findings").hidden=state.tab!=="findings";
+  document.getElementById("hosts").hidden=state.tab!=="hosts";
+  document.getElementById("surface").hidden=state.tab!=="surface";
+  if(state.tab==="findings")renderFindings();
+  if(state.tab==="hosts")renderHosts();
+  if(state.tab==="surface")renderSurface();
+}
+
+function renderStats(){
+  const f=state.findings, counts={critical:0,high:0,medium:0,low:0,info:0};
+  let verified=0;
+  for(const x of f){counts[x.severity||"info"]=(counts[x.severity||"info"]||0)+1;if(x.verified)verified++;}
+  const hosts=Object.values(state.graph.nodes||{}).filter(n=>n.kind==="subdomain");
+  const live=hosts.filter(h=>h.attrs&&h.attrs.status).length;
+  const total=f.length||1;
+  const bar=SEV.map(s=>`<i style="flex:${counts[s]||0};background:${SEVCOLOR[s]}"></i>`).join("");
+  document.getElementById("stats").innerHTML=
+    tile(f.length,"findings")+tile(verified,"verified")+tile(hosts.length,"hosts")+tile(live,"live")+
+    `<div class="tile" style="flex:1;min-width:220px"><div class="l">severity mix</div><div class="sevbar">${bar}</div>
+      <div class="l" style="margin-top:8px">${SEV.filter(s=>counts[s]).map(s=>`<span style="color:${SEVCOLOR[s]}">■</span> ${counts[s]} ${s}`).join("&nbsp;&nbsp;")}</div></div>`;
+}
+function tile(n,l){return `<div class="tile"><div class="n">${n}</div><div class="l">${l}</div></div>`;}
+
+function renderChips(){
+  document.getElementById("chips").innerHTML=SEV.map(s=>
+    `<span class="chip ${s} ${state.off.has(s)?"":"on"}" data-sev="${s}">${s}</span>`).join("");
+}
+
+function renderFindings(){
+  const rows=visibleFindings();
+  document.getElementById("viewcount").textContent=rows.length+" shown"+(state.host?` · ${state.host}`:"");
+  const el=document.getElementById("findings");
+  if(!rows.length){el.innerHTML=`<div class="empty">No findings match. Run a scan with <code>-o huntx.findings.jsonl</code>.</div>`;return;}
+  el.innerHTML=`<table><thead><tr><th style="width:88px">Severity</th><th>Type</th><th>URL</th><th style="width:60px">Conf</th><th style="width:44px">✓</th></tr></thead><tbody>`+
+    rows.map(f=>`<tr data-i="${f._i}">
+      <td><span class="pill ${esc(f.severity||'info')}">${esc(f.severity||'info')}</span></td>
+      <td>${esc(f.type||f.template_id)}<div class="tid">${esc(f.template_id||"")}</div></td>
+      <td class="url">${esc(f.matched_at||"")}</td>
+      <td>${f.confidence!=null?esc(f.confidence)+"%":""}</td>
+      <td>${f.verified?'<span class="ok">✓</span>':''}</td></tr>`).join("")+`</tbody></table>`;
+}
+
+function renderHosts(){
+  const hosts=Object.values(state.graph.nodes||{}).filter(n=>n.kind==="subdomain")
+    .sort((a,b)=>a.value.localeCompare(b.value));
+  const byHost={};
+  for(const f of state.findings){const h=hostOf(f.matched_at);(byHost[h]=byHost[h]||[]).push(f);}
+  document.getElementById("viewcount").textContent=hosts.length+" hosts";
+  const el=document.getElementById("hosts");
+  if(!hosts.length){el.innerHTML=`<div class="empty">No hosts yet — run <code>recon</code>.</div>`;return;}
+  el.innerHTML=`<table><thead><tr><th>Host</th><th style="width:70px">Status</th><th>Tech</th><th>Title</th><th style="width:90px">Findings</th></tr></thead><tbody>`+
+    hosts.map(h=>{const fs=byHost[h.value]||[];const worst=fs.map(x=>x.severity).sort((a,b)=>sevRank(a)-sevRank(b))[0];
+      return `<tr data-host="${esc(h.value)}">
+      <td class="url">${esc(h.value)}</td>
+      <td>${esc((h.attrs||{}).status||"")}</td>
+      <td class="muted">${esc((h.attrs||{}).tech||"")}</td>
+      <td class="muted">${esc((h.attrs||{}).title||"")}</td>
+      <td>${fs.length?`<span class="pill ${worst}">${fs.length} ${worst}</span>`:'<span class="muted">—</span>'}</td></tr>`;}).join("")+`</tbody></table>`;
+}
+
+function renderSurface(){
+  const nodes=state.graph.nodes||{};
+  const subs=Object.values(nodes).filter(n=>n.kind==="subdomain").sort((a,b)=>a.value.localeCompare(b.value));
+  const byHost={};for(const f of state.findings){const h=hostOf(f.matched_at);(byHost[h]=byHost[h]||[]).push(f);}
+  const domain=(Object.values(nodes).find(n=>n.kind==="domain")||{}).value||"attack surface";
+  document.getElementById("viewcount").textContent=subs.length+" nodes";
+  const el=document.getElementById("surface");
+  if(!subs.length){el.innerHTML=`<div class="empty">No surface yet — run <code>recon</code>.</div>`;return;}
+  const rowH=52, top=30, cx=190, nodeX=430, w=880, h=Math.max(140, top+subs.length*rowH+20), dy=h/2;
+  let svg=`<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">`;
+  // edges
+  subs.forEach((s,i)=>{const y=top+i*rowH+16;svg+=`<path d="M${cx+70} ${dy} C ${cx+150} ${dy}, ${nodeX-40} ${y}, ${nodeX} ${y}" fill="none" stroke="#2d3446" stroke-width="1.2"/>`;});
+  // domain node
+  svg+=`<g><rect x="${cx-70}" y="${dy-22}" width="140" height="44" rx="10" fill="#1a1f2b" stroke="#e6394a"/><text x="${cx}" y="${dy+4}" fill="#e7ebf0" font-size="13" font-family="monospace" text-anchor="middle">${esc(domain)}</text></g>`;
+  // subdomain nodes
+  subs.forEach((s,i)=>{
+    const y=top+i*rowH+16, fs=byHost[s.value]||[];
+    const worst=fs.length?fs.map(x=>x.severity).sort((a,b)=>sevRank(a)-sevRank(b))[0]:null;
+    const col=worst?SEVCOLOR[worst]:"#2d3446", live=(s.attrs||{}).status;
+    svg+=`<g class="node-host" data-host="${esc(s.value)}">
+      <rect class="nbox" x="${nodeX}" y="${y-15}" width="${w-nodeX-16}" height="30" rx="8" fill="#141821" stroke="#232936"/>
+      <circle cx="${nodeX+16}" cy="${y}" r="5" fill="${col}"/>
+      <text x="${nodeX+30}" y="${y+4}" fill="#e7ebf0" font-size="12.5" font-family="monospace">${esc(s.value)}</text>
+      <text x="${w-24}" y="${y+4}" fill="#8b95a7" font-size="11" font-family="monospace" text-anchor="end">${live?esc(live)+" · ":""}${fs.length?fs.length+" finding"+(fs.length>1?"s":""):""}</text>
+    </g>`;
+  });
+  svg+=`</svg>`;
+  el.innerHTML=svg;
+}
+
+function openDrawer(f){
+  const d=document.getElementById("drawer");
+  const ex=f.extracted?Object.entries(f.extracted).map(([k,v])=>`<div class="k">${esc(k)}</div><div>${esc(v)}</div>`).join(""):"";
+  const ev=f.evidence||{};
+  d.innerHTML=`
+    <div class="dh"><span class="pill ${esc(f.severity||'info')}">${esc(f.severity||'info')}</span>
+      <h2>${esc(f.type||f.template_id)}</h2><button class="x" id="dx">×</button></div>
+    <div class="db">
+      <div class="kv">
+        <div class="k">template</div><div>${esc(f.template_id||"")}</div>
+        <div class="k">URL</div><div class="url">${esc(f.matched_at||"")}</div>
+        ${f.cwe?`<div class="k">weakness</div><div>${esc(f.cwe)}</div>`:""}
+        ${f.cvss?`<div class="k">CVSS</div><div>${esc(f.cvss)}</div>`:""}
+        <div class="k">confidence</div><div>${esc(f.confidence!=null?f.confidence+"%":"")}</div>
+        <div class="k">verified</div><div>${f.verified?'<span class="ok">✓ deterministically re-confirmed</span>':'<span class="muted">no</span>'}</div>
+        ${f.ts?`<div class="k">seen</div><div class="muted">${esc(f.ts)}</div>`:""}
+      </div>
+      ${ex?`<div class="sec">extracted</div><div class="kv">${ex}</div>`:""}
+      ${(ev.request||ev.response||ev.oob_proof)?`<div class="sec">evidence</div><pre>${esc([ev.request,ev.response,ev.oob_proof?("OOB: "+ev.oob_proof):""].filter(Boolean).join("\n\n"))}</pre>`:""}
+      ${f.repro?`<div class="sec">reproduction</div><pre id="repro">${esc(f.repro)}</pre><button class="btn" id="copy" style="margin-top:8px">copy repro</button>`:""}
+      ${(f.tags&&f.tags.length)?`<div class="sec">tags</div><div>${f.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div>`:""}
+    </div>`;
+  d.classList.add("open");d.setAttribute("aria-hidden","false");document.getElementById("scrim").classList.add("open");
+  document.getElementById("dx").onclick=closeDrawer;
+  const cp=document.getElementById("copy");
+  if(cp)cp.onclick=()=>{try{navigator.clipboard.writeText(f.repro);cp.textContent="copied ✓";}catch(e){}};
+}
+function closeDrawer(){document.getElementById("drawer").classList.remove("open");document.getElementById("scrim").classList.remove("open");}
+
+// events
+document.addEventListener("click",e=>{
+  const chip=e.target.closest(".chip");
+  if(chip){const s=chip.dataset.sev;state.off.has(s)?state.off.delete(s):state.off.add(s);render();return;}
+  const tab=e.target.closest(".tab");
+  if(tab){document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));tab.classList.add("active");state.tab=tab.dataset.tab;render();return;}
+  const frow=e.target.closest("#findings tr[data-i]");
+  if(frow){openDrawer(state.findings[+frow.dataset.i]);return;}
+  const hrow=e.target.closest("tr[data-host], .node-host");
+  if(hrow){state.host=hrow.dataset.host;state.tab="findings";document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.tab==="findings"));render();return;}
+});
+document.getElementById("scrim").onclick=closeDrawer;
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDrawer();});
+document.getElementById("q").addEventListener("input",e=>{state.q=e.target.value;if(state.tab==="findings")renderFindings();});
+document.getElementById("refresh").onclick=()=>{state.host=null;load();};
+load();
+</script>
+</body>
+</html>
