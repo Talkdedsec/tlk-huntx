@@ -1,0 +1,15 @@
+/huntx
+/huntx.exe
+/dist/
+*.exe
+*.out
+*.test
+*.sarif
+findings*.jsonl
+*.db
+*.sqlite
+.env
+scope.local.json
+huntx.graph.json
+huntx.findings.jsonl
+huntx.feedback.json

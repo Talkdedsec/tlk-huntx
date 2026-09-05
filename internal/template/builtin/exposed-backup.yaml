@@ -1,0 +1,31 @@
+id: exposed-backup
+info:
+  name: Exposed backup / archive file
+  author: huntx
+  severity: high
+  tags: exposure,backup
+  description: A downloadable backup or database dump may contain source, credentials, or user data.
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/backup.zip"
+      - "{{BaseURL}}/backup.sql"
+      - "{{BaseURL}}/backup.tar.gz"
+      - "{{BaseURL}}/database.sql"
+      - "{{BaseURL}}/dump.sql"
+      - "{{BaseURL}}/www.zip"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: header
+        case-insensitive: true
+        condition: or
+        words:
+          - "application/zip"
+          - "application/x-gzip"
+          - "application/octet-stream"
+          - "application/sql"
+          - "application/x-sql"

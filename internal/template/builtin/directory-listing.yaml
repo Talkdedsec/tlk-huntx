@@ -1,0 +1,23 @@
+id: directory-listing
+info:
+  name: Directory listing enabled
+  author: huntx
+  severity: low
+  tags: exposure,misconfig
+  description: The server returns an index of files, exposing directory contents.
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        condition: or
+        words:
+          - "Index of /"
+          - "<title>Index of"
+          - "Directory listing for"

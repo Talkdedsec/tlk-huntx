@@ -1,0 +1,22 @@
+id: exposed-git-config
+info:
+  name: Exposed .git/config
+  author: huntx
+  severity: medium
+  tags: exposure,git
+  description: A readable .git/config exposes repository metadata and can lead to source disclosure.
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/.git/config"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        condition: or
+        words:
+          - "[core]"
+          - "repositoryformatversion"

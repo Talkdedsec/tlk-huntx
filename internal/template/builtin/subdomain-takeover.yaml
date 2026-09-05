@@ -1,0 +1,26 @@
+id: subdomain-takeover
+info:
+  name: Possible subdomain takeover
+  author: huntx
+  severity: high
+  tags: takeover,dns
+  description: The host serves a third-party "not found" fingerprint, a common sign of a dangling CNAME open to takeover.
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        condition: or
+        words:
+          - "There isn't a GitHub Pages site here"
+          - "NoSuchBucket"
+          - "The specified bucket does not exist"
+          - "no-such-app.herokuapp.com"
+          - "Fastly error: unknown domain"
+          - "The request could not be satisfied"
+          - "Sorry, this shop is currently unavailable"
+          - "project not found"
+          - "Repository not found"
