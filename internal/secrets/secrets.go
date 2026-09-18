@@ -20,6 +20,8 @@ var rules = []rule{
 	{"google-api-key", finding.High, regexp.MustCompile(`AIza[0-9A-Za-z\-_]{35}`)},
 	{"github-token", finding.High, regexp.MustCompile(`gh[pousr]_[0-9A-Za-z]{36}`)},
 	{"slack-token", finding.High, regexp.MustCompile(`xox[baprs]-[0-9A-Za-z-]{10,48}`)},
+	// Unanchored on purpose: these run over a whole response body, not over a URL
+	// being validated, so a webhook is still a leak wherever in the document it sits.
 	{"slack-webhook", finding.Medium, regexp.MustCompile(`https://hooks\.slack\.com/services/T[0-9A-Za-z_/]{20,}`)},
 	{"stripe-secret-key", finding.Critical, regexp.MustCompile(`sk_live_[0-9a-zA-Z]{24}`)},
 	{"private-key", finding.High, regexp.MustCompile(`-----BEGIN (?:RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----`)},
