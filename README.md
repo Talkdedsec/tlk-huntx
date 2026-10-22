@@ -161,3 +161,7 @@ Issues and templates are welcome — keep additions detection-only and inside th
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+<p align="center">
+  <sub>Built by <a href="https://talkdedsec.com">Talkdedsec</a></sub>
+</p>

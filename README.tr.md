@@ -85,3 +85,7 @@ Aktif komutlar scope dosyası + `--authorized` olmadan çalışmaz. Rate-limit, 
 istek tavanı ve durum-değiştiren metod bloğu varsayılan açık.
 
 Ayrıntılı geliştirme durumu `DEVAM.md`'de.
+
+<p align="center">
+  <sub><a href="https://talkdedsec.com">Talkdedsec</a> tarafından yapıldı</sub>
+</p>
